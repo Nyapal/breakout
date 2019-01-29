@@ -24,7 +24,7 @@ const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = [];
   for (let r = 0; r < brickRowCount; r++) {
-    bricks[c][r] = {x: 0, y: 0, status: 1};
+    bricks[c][r] = { x: 0, y: 0, status: 1 };
   }
 }
 
@@ -54,7 +54,7 @@ function mouseMoveHandler(e) {
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
-      let b = bricks[c][r];
+      const b = bricks[c][r];
       if (b.status === 1) {
         if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
           dy = -dy;
@@ -81,14 +81,22 @@ function drawBall() {
 function drawBricks() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].status == 1) {
+      if (bricks[c][r].status === 1) {
         const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        const brickY = (r * (brickHeight+brickPadding)) + brickOffsetTop;
+        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        
         bricks[c][r].x = brickX;
         bricks[c][r].y = brickY;
+
         ctx.beginPath();
         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = '#0095DD';
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = 'white';
         ctx.fill();
         ctx.closePath();
       }
@@ -99,7 +107,7 @@ function drawBricks() {
 function drawLives() {
   ctx.font = '16px Arial';
   ctx.fillStyle = '#0095DD';
-  ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
+  ctx.fillText(`Lives: ${ lives}`, canvas.width - 65, 20);
 }
 
 function drawPaddle() {
@@ -113,7 +121,7 @@ function drawPaddle() {
 function drawScore() {
   ctx.font = '16px Arial';
   ctx.fillStyle = '#0095DD';
-  ctx.fillText('Score: ' + score, 8, 20);
+  ctx.fillText(`Score: ${ score}`, 8, 20);
 }
 
 
@@ -126,7 +134,7 @@ function draw() {
   drawPaddle();
   drawScore();
 
-  if( x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
     dx = -dx;
   }
   if (y + dy < ballRadius) {
@@ -145,9 +153,9 @@ function draw() {
         dx = 2;
         dy = -2;
         paddleX = (canvas.width - paddleWidth) / 2;
-            }
-        }
+      }
     }
+  }
 
   if (rightPressed && paddleX < canvas.width - paddleWidth) {
     paddleX += 7;
