@@ -24,17 +24,18 @@ class Ball {
 }
 
 class Brick {
-  constructor(x, y, height = 20, width = 10) {
+  constructor(x, y, height = 20, width = 75, status = 1) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.status = status
   }
 
   render(ctx) {
     ctx.beginPath();
     ctx.rect(this.x, this.y, this.width, this.height);
-    ctx.fillStyle = 'green';
+    ctx.fillStyle = randomColor();
     ctx.fill();
     ctx.closePath();
   }
@@ -68,8 +69,6 @@ ball.move();
 ball.render(ctx);
 
 const brick = new Brick(100, 140)
-//brick.x = 100
-//brick.y = 140
 brick.render(ctx);
 
 const paddle = new Paddle(canvas.width / 2)
@@ -87,7 +86,6 @@ for (let c = 0; c < brickColumnCount; c++) {
     const x = (c * (75 + brickPadding)) + brickOffsetLeft;
     const y = (r * (20 + brickPadding)) + brickOffsetTop;
     bricks[c][r] = new Brick(x, y)
-    // bricks[c][r] = { x: 0, y: 0, status: 1 };
   }
 }
 
@@ -114,13 +112,17 @@ function mouseMoveHandler(e) {
   }
 }
 
+function randomColor() {
+  return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
+}
+
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const b = bricks[c][r];
       if (b.status === 1) {
-        if (ball.x > b.x && ball.x < b.x + brickWidth &&
-            ball.y > b.y && ball.y < b.y + brickHeight) {
+        if (ball.x > b.x && ball.x < b.x + brick.width &&
+            ball.y > b.y && ball.y < b.y + brick.height) {
           ball.dy = -ball.dy;
           b.status = 0;
           score++;
