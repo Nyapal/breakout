@@ -5,9 +5,13 @@ class Ball {
   constructor(x, y, radius = 10) {
     this.x = x;
     this.y = y;
+    this.radius = radius;
+    this.reset()
+  }
+  reset() {
     this.dx = 5;
     this.dy = -5;
-    this.radius = radius;
+
   }
   move() {
     this.x += this.dx;
@@ -27,7 +31,7 @@ class Ball {
 
 class Life {
   constructor(placement, lives = 30) {
-    this.placement = placement
+    this.placement = placement;
     this.lives = lives;
   }
   render(ctx) {
@@ -78,6 +82,12 @@ class Brick {
   }
 }
 
+// new Brick(11, 22) -> x = 11 this = {} -> {x: 11}
+// brick_1 = new Brick(11, 22)  -> { x: 11, y: 22, width: 75, height: 20, status: 1 }
+// brick_2 = new Brick(110, 22) -> { x: 110, y: 22, width: 75, height: 20, status: 1 }
+// brick_1.x -> 11
+// brick_2.x -> 110
+
 // -----------------------------------------------------
 // Bricks
 
@@ -118,7 +128,7 @@ class Bricks {
 // ----------------------------------------------
 // Score 
 class Score {
-  constructor(score = 30) {
+  constructor(score = 0) {
     this.score = score;
   }
   render(ctx) {
@@ -141,27 +151,16 @@ class Score {
  class Game {
    constructor() {
     this.canvas = document.getElementById('myCanvas');
+    console.log(this.canvas)
     this.ctx = this.canvas.getContext('2d');
     this.ball = new Ball(this.canvas.width / 2, this.canvas.height - 30);
     this.paddle = new Paddle(this.canvas.width / 2, this.canvas.height - 10);
     this.bricks = new Bricks();
     this.lives = new Life(this.canvas.width - 75);
-    this.score = new Score();
-
-    // let rightPressed = false;
-    // let leftPressed = false;
-
-    document.addEventListener('keydown', function(e) { 
-      this.keyDownHandler(e) 
-    }, false);
-
-    document.addEventListener('keyup', function(e) { 
-      this.keyUpHandler(e) 
-    }, false);
-
-    document.addEventListener('mousemove', function(e) { 
-      this.mouseMoveHandler(e) 
-    }, false);
+    this.score = new Score(); // {score: 0}
+    this.rightPressed = false;
+    this.leftPressed = false;
+    this.handlers()
   }
 
   draw() {
@@ -172,6 +171,7 @@ class Score {
     this.drawBricks()
     this.drawScore()
     this.drawLife()
+    this.paddleMove()
     this.playGame()
     requestAnimationFrame(this.draw.bind(this));
   }
@@ -197,19 +197,28 @@ class Score {
     this.score.render(this.ctx)
   }
 
+  paddleMove() {
+    if (this.rightPressed && this.paddle.x < this.canvas.width - this.paddle.width) {
+      this.paddle.x += 7;
+    } else if (this.leftPressed && this.paddle.x > 0) {
+      this.paddle.x -= 7;
+    }
+  }
+
   collisionDectection() {
-    for (let c = 0; c < this.brickColumnCount; c++) {
-      for (let r = 0; r < this.brickRowCount; r++) {
-        const b = bricks[c][r];
+    for (let c = 0; c < this.bricks.brickColumnCount; c++) {
+      for (let r = 0; r < this.bricks.brickRowCount; r++) {
+        const b = this.bricks.bricks[c][r];
         if (b.status === 1) {
-          if (this.ball.x > b.x && this.ball.x < b.x + this.brick.width &&
-              this.ball.y > b.y && this.ball.y < b.y + this.brick.height) {
+          if (this.ball.x > b.x && this.ball.x < b.x + b.width &&
+              this.ball.y > b.y && this.ball.y < b.y + b.height) {
             this.ball.dy = -this.ball.dy;
             b.status = 0;
-            score++;
-            if (score === this.brickRowCount * this.brickColumnCount) {
-              alert('You win! Congratulations!')
-              document.location.reload();
+            this.score.score++;
+            // if score.score === 15)
+            if (this.score.score === this.bricks.brickRowCount * this.bricks.brickColumnCount) {
+              // alert('You win! Congratulations!')
+              // document.location.reload();
             }
           }
         }
@@ -234,7 +243,7 @@ class Score {
   }
 
   mouseMoveHandler(e) {
-    const relativeX = e.clientX - this.canvas.OffsetLeft;
+    const relativeX = e.clientX - this.canvas.offsetLeft;
     if (relativeX > 0 && relativeX < this.canvas.width) {
       this.paddle.x = relativeX - this.paddle.width / 2;
     }
@@ -250,15 +259,14 @@ class Score {
       if (this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.width) {
         this.ball.dy = -this.ball.dy
       } else {
-        this.lives--;
-        if (!this.lives) {
+        this.lives.lives--;
+        if (!this.lives.lives) {
           alert ('GAME OVER');
           document.location.reload();
         } else {
           this.ball.x = this.canvas.width / 2;
           this.ball.y = this.canvas.height - 30;
-          this.ball.dx = 2;
-          this.ball.dy = -2;
+          this.ball.reset()
           this.paddle.x = (this.canvas.width - this.paddle.width) / 2;
         }
       }
@@ -266,14 +274,23 @@ class Score {
   }
 
   handlers() {
-    if (rightPressed && this.paddle.x < this.canvas.width - this.paddle.width) {
-      this.paddle.x += 7;
-    } else if (leftPressed && this.paddle.x > 0) {
-      this.paddle.x -= 7;
-    }
+    // document.addEventListener(eventType, handler)
+    document.addEventListener('keydown', (e) => { 
+      this.keyDownHandler(e) 
+    }, false);
+  
+    document.addEventListener('keyup', (e) => { 
+      this.keyUpHandler(e) 
+    }, false);
+  
+    document.addEventListener('mousemove', (e) => { 
+      this.mouseMoveHandler(e) 
+    }, false);
+
   }
   
 }
  
-const game = new Game()
+const game = new Game() // { ball:{}, ..., score: {} }
+console.log(game)
 game.draw()
