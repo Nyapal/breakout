@@ -30,7 +30,7 @@ class Ball {
 // Life
 
 class Life {
-  constructor(placement, lives = 30) {
+  constructor(placement, lives = 5) {
     this.placement = placement;
     this.lives = lives;
   }
