@@ -82,12 +82,6 @@ class Brick {
   }
 }
 
-// new Brick(11, 22) -> x = 11 this = {} -> {x: 11}
-// brick_1 = new Brick(11, 22)  -> { x: 11, y: 22, width: 75, height: 20, status: 1 }
-// brick_2 = new Brick(110, 22) -> { x: 110, y: 22, width: 75, height: 20, status: 1 }
-// brick_1.x -> 11
-// brick_2.x -> 110
-
 // -----------------------------------------------------
 // Bricks
 
@@ -138,20 +132,12 @@ class Score {
   }
 }
 
-// function randomColor() {
-//   return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`;
-// }
-
-/**
- * 
- * 
- * 
- **/
+// --------------------------------------------------
+// Game
 
  class Game {
    constructor() {
     this.canvas = document.getElementById('myCanvas');
-    console.log(this.canvas)
     this.ctx = this.canvas.getContext('2d');
     this.ball = new Ball(this.canvas.width / 2, this.canvas.height - 30);
     this.paddle = new Paddle(this.canvas.width / 2, this.canvas.height - 10);
@@ -215,10 +201,9 @@ class Score {
             this.ball.dy = -this.ball.dy;
             b.status = 0;
             this.score.score++;
-            // if score.score === 15)
             if (this.score.score === this.bricks.brickRowCount * this.bricks.brickColumnCount) {
-              // alert('You win! Congratulations!')
-              // document.location.reload();
+              alert('You win! Congratulations!')
+              document.location.reload();
             }
           }
         }
@@ -274,7 +259,6 @@ class Score {
   }
 
   handlers() {
-    // document.addEventListener(eventType, handler)
     document.addEventListener('keydown', (e) => { 
       this.keyDownHandler(e) 
     }, false);
@@ -291,6 +275,5 @@ class Score {
   
 }
  
-const game = new Game() // { ball:{}, ..., score: {} }
-console.log(game)
+const game = new Game()
 game.draw()
